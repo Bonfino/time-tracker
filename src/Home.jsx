@@ -24,19 +24,6 @@ export default function Home() {
     }
   };
 
-  /*
-  const fetchCards = async () => {
-    axios
-      .get(import.meta.env.VITE_DATABASE_HTTP + "/api/getcards")
-      .then((response) => {
-        if (response.data.message !== "No cards found") {
-          setCards(response.data);
-        } else console.log(response.data);
-      })
-      .catch((error) => console.error(error));
-  };
-  */
-
   async function fetchCards() {
     const url = import.meta.env.VITE_DATABASE_HTTP + "/api/getcards";
 
@@ -82,23 +69,9 @@ export default function Home() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const result = await response.json();
-      console.log("Success:", result);
     } catch (error) {
       console.error("Error:", error);
     }
-
-    /*
-    try {
-      await axios.put(import.meta.env.VITE_DATABASE_HTTP + "/api/update", {
-        id,
-        time: elapsedTime,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    */
   };
 
   const addCard = async (newCard) => {
@@ -118,17 +91,6 @@ export default function Home() {
     } catch (error) {
       console.error("Error:", error);
     }
-
-    /*
-    try {
-      await axios.post(
-        import.meta.env.VITE_DATABASE_HTTP + "/api/add",
-        newCard
-      );
-    } catch (error) {
-      console.error("Errore nell'aggiunta della card:", error);
-    }
-    */
   };
 
   const deleteCard = (id) => {
@@ -158,25 +120,43 @@ export default function Home() {
               type="submit"
               className="w-24 bg-green-500 text-white p-2 shadow-md rounded hover:bg-green-600"
             >
-              CREATE
+              Create
             </button>
           </div>
         </form>
       </div>
-      <div className="flex justify-center items-start mt-10 p-10 flex-wrap gap-4">
-        {cards.map((card, index) => (
-          <Card
-            key={index}
-            id={card.id}
-            description={card.description}
-            created={card.created}
-            isRunning={card.isRunning}
-            time={card.time}
-            stopped={card.stopped}
-            deleteCard={deleteCard}
-            getTime={getTime}
-          />
-        ))}
+
+      <div className="flex justify-center mt-5">
+        <table className="w-4/5 border-collapse border border-gray-300 rounded shadow-md">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border border-gray-300 p-3 text-left">
+                Task name
+              </th>
+              <th className="border border-gray-300 p-3 text-left">Urgency</th>
+              <th className="border border-gray-300 p-3 text-left">
+                Time spent
+              </th>
+              <th className="border border-gray-300 p-3 text-left">Date</th>
+              <th className="border border-gray-300 p-3 text-left">Manage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cards.map((card, index) => (
+              <Card
+                key={index}
+                id={card.id}
+                description={card.description}
+                created={card.created}
+                isRunning={card.isRunning}
+                time={card.time}
+                stopped={card.stopped}
+                deleteCard={deleteCard}
+                getTime={getTime}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useTimer } from "./hooks/useTimer.js";
-import axios from "axios";
 
 export default function Card({
   id,
@@ -29,9 +28,15 @@ export default function Card({
 
   const updateStoppedStatus = async (stopped) => {
     try {
-      await axios.put(import.meta.env.VITE_DATABASE_HTTP + "/api/update", {
-        id,
-        stopped,
+      await fetch(import.meta.env.VITE_DATABASE_HTTP + "/api/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          stopped,
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -54,18 +59,6 @@ export default function Card({
     } catch (error) {
       console.error("Error:", error);
     }
-
-    /*
-    try {
-      await axios.delete(
-        `${import.meta.env.VITE_DATABASE_HTTP}/api/delete/${id}`
-      );
-
-      deleteCard(id);
-    } catch (error) {
-      console.error("Errore nell'eliminazione della card:", error);
-    }
-    */
   };
 
   function handleTime() {
@@ -87,46 +80,56 @@ export default function Card({
   }, [isTimerRunning, elapsedTime]);
 
   const buttonClass = isTimerRunning
-    ? "w-24 bg-gray-500 text-white p-2 shadow-md rounded hover:bg-gray-600"
-    : "w-24 bg-blue-500 text-white p-2 shadow-md rounded hover:bg-blue-600";
+    ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
+    : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
 
   return (
-    <div className="border-2 border-black rounded-xl shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 h-[14rem] flex flex-col relative bg-gray-100">
-      <button
-        className="absolute flex justify-center items-center top-0 right-0 -mt-2.5 -mr-2.5 w-6 h-6 bg-red-500 text-white shadow-md rounded-full hover:bg-red-600"
-        onClick={handleDelete}
-      >
-        <span className="text-xs font-bold">X</span>
-      </button>
-      <p className={`text-center font-bold text-md break-all`}>{description}</p>
-      <span className="flex-grow text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-        {hours > 0
-          ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`
-          : `${formatTime(minutes)}:${formatTime(seconds)}`}
-      </span>
-      {!stop && (
-        <button
-          className={`absolute bottom-0 right-0 mb-2 mr-2 font-semibold ${buttonClass}`}
-          onClick={handleRunning}
-        >
-          {isTimerRunning ? "PAUSE" : "START"}
-        </button>
-      )}
-
-      {!stop && (
-        <button
-          className="absolute bottom-0 left-0 mb-2 ml-2 font-semibold w-24 bg-red-500 text-white p-2 shadow-md rounded hover:bg-red-600"
-          onClick={handleStop}
-        >
-          STOP
-        </button>
-      )}
-
-      {stop && (
-        <p className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 text-sm text-gray-500">
-          {created}
-        </p>
-      )}
-    </div>
+    <>
+      <tr className="hover:bg-gray-50">
+        <td className="border border-gray-300 p-3">
+          <p className="font-bold text-xl break-all">{description}</p>
+        </td>
+        <td className="border border-gray-300 text-red-400 font-semibold p-3">
+          High
+        </td>
+        <td className="border border-gray-300 p-3">
+          <span className="flex-grow text-center text-md sm:text-2xl md:text-3xl lg:text-4xl">
+            {hours > 0
+              ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(
+                  seconds
+                )}`
+              : `${formatTime(minutes)}:${formatTime(seconds)}`}
+          </span>
+        </td>
+        <td className="border border-gray-300 p-3">{created}</td>
+        <td className="border border-gray-300 p-3 w-[200px]">
+          <div className="w-full flex justify-start">
+            {stop ? (
+              <button
+                onClick={handleDelete}
+                className="font-semibold bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600 min-w-[80px] max-w-[120px]"
+              >
+                Delete
+              </button>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-2 max-w-[250px]">
+                <button
+                  className={`font-semibold ${buttonClass} min-w-[80px] w-full`}
+                  onClick={handleRunning}
+                >
+                  {isTimerRunning ? "Pause" : "Start"}
+                </button>
+                <button
+                  className="font-semibold bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600 min-w-[80px] w-full"
+                  onClick={handleStop}
+                >
+                  Stop
+                </button>
+              </div>
+            )}
+          </div>
+        </td>
+      </tr>
+    </>
   );
 }
