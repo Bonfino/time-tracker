@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTimer } from "./hooks/useTimer.js";
 
 export default function Card({
@@ -8,12 +8,17 @@ export default function Card({
   isRunning,
   time,
   stopped,
+  urgency,
   deleteCard,
   getTime,
 }) {
   const [isTimerRunning, setIsTimerRunning] = useState(isRunning);
   const elapsedTime = useTimer(isTimerRunning, time);
   const [stop, setStop] = useState(stopped);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedUrgency, setSelectedUrgency] = useState(urgency);
+
+  const dropdownRef = useRef(null);
 
   const seconds = Math.floor(elapsedTime % 60);
   const minutes = Math.floor((elapsedTime / 60) % 60);
@@ -28,7 +33,7 @@ export default function Card({
 
   const updateStoppedStatus = async (stopped) => {
     try {
-      await fetch(import.meta.env.VITE_DATABASE_HTTP + "/api/update", {
+      await fetch(import.meta.env.VITE_DATABASE_HTTP + "/api/updateStatus", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +66,25 @@ export default function Card({
     }
   };
 
+  const handleUrgencyChange = async (newUrgency) => {
+    const url = import.meta.env.VITE_DATABASE_HTTP + `/api/updateUrgency`;
+    const data = { id, urgency: newUrgency };
+    setSelectedUrgency(newUrgency);
+    setIsDropdownOpen(false);
+
+    try {
+      await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   function handleTime() {
     getTime(id, elapsedTime);
   }
@@ -79,9 +103,32 @@ export default function Card({
     };
   }, [isTimerRunning, elapsedTime]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   const buttonClass = isTimerRunning
     ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
     : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
+
+  const urgencyClass =
+    selectedUrgency === "Low"
+      ? "bg-green-300 text-green-800"
+      : selectedUrgency === "Medium"
+      ? "bg-yellow-300 text-yellow-800"
+      : "bg-red-300 text-red-800";
 
   return (
     <>
@@ -89,11 +136,42 @@ export default function Card({
         <td className="border border-gray-300 p-3">
           <p className="font-bold text-xl break-all">{description}</p>
         </td>
-        <td className="border border-gray-300 text-red-400 font-semibold p-3">
-          High
+        <td className="border border-gray-300 font-semibold p-3">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`text-md ${urgencyClass} rounded-xl py-0.5 px-1.5`}
+            >
+              {selectedUrgency}
+            </button>
+            {isDropdownOpen && !stop && (
+              <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                <div className="py-1">
+                  <button
+                    onClick={() => handleUrgencyChange("Low")}
+                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Low
+                  </button>
+                  <button
+                    onClick={() => handleUrgencyChange("Medium")}
+                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Medium
+                  </button>
+                  <button
+                    onClick={() => handleUrgencyChange("High")}
+                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    High
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </td>
         <td className="border border-gray-300 p-3">
-          <span className="flex-grow text-center text-md sm:text-2xl md:text-3xl lg:text-4xl">
+          <span className="flex-grow text-center text-md sm:text-xl md:text-2xl lg:text-3xl">
             {hours > 0
               ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(
                   seconds
@@ -101,7 +179,7 @@ export default function Card({
               : `${formatTime(minutes)}:${formatTime(seconds)}`}
           </span>
         </td>
-        <td className="border border-gray-300 p-3">{created}</td>
+        <td className="border border-gray-300 p-3 font-semibold">{created}</td>
         <td className="border border-gray-300 p-3 w-[200px]">
           <div className="w-full flex justify-start">
             {stop ? (

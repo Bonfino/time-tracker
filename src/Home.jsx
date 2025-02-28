@@ -15,6 +15,7 @@ export default function Home() {
         description: inputDesc,
         created: formattedDate,
         isRunning: true,
+        urgency: "Low",
         time: 0,
         stopped: false,
       };
@@ -49,7 +50,7 @@ export default function Home() {
   }
 
   const getTime = async (id, elapsedTime) => {
-    const url = import.meta.env.VITE_DATABASE_HTTP + "/api/update";
+    const url = import.meta.env.VITE_DATABASE_HTTP + "/api/updateStatus";
     const data = { id, time: elapsedTime };
 
     setCards((prevCards) =>
@@ -70,7 +71,7 @@ export default function Home() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
     }
   };
 
@@ -151,6 +152,7 @@ export default function Home() {
                 isRunning={card.isRunning}
                 time={card.time}
                 stopped={card.stopped}
+                urgency={card.urgency}
                 deleteCard={deleteCard}
                 getTime={getTime}
               />

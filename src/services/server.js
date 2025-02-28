@@ -23,7 +23,7 @@ mongoose
 import Card from "../models/Card.js";
 
 app.post("/api/add", async (req, res) => {
-  const { id, description, created, time, stopped } = req.body;
+  const { id, description, created, time, urgency, stopped } = req.body;
   console.log(req.body);
   try {
     const newCard = new Card({
@@ -31,6 +31,7 @@ app.post("/api/add", async (req, res) => {
       description,
       created,
       time,
+      urgency,
       stopped,
     });
 
@@ -75,7 +76,7 @@ app.get("/api/getcards", async (req, res) => {
   }
 });
 
-app.put("/api/update", async (req, res) => {
+app.put("/api/updateStatus", async (req, res) => {
   const { id, time, stopped } = req.body;
 
   try {
@@ -93,6 +94,26 @@ app.put("/api/update", async (req, res) => {
       .send({ message: "Card updated successfully", card: updatedCard });
   } catch (err) {
     res.status(500).send({ message: "Error updating card", error: err });
+  }
+});
+
+app.put("/api/updateUrgency", async (req, res) => {
+  const { id, urgency } = req.body;
+
+  try {
+    const updateCard = await Card.findOneAndUpdate(
+      { id },
+      { urgency },
+      { new: true }
+    );
+    if (!updateCard) {
+      return res.status(404).send({ message: "Card not found" });
+    }
+    res
+      .status(200)
+      .send({ message: "Urgency updated successfully", card: updateCard });
+  } catch (err) {
+    res.status(500).send({ message: "Error updating urgency", error: err });
   }
 });
 
