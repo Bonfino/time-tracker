@@ -6,7 +6,7 @@ const cardScheme = new mongoose.Schema({
   created: { type: String },
   time: { type: Number },
   stopped: {type: Boolean},
-  urgency: {type: String}
+  urgency: {type: String},
 });
 
 const Card = mongoose.model("Card", cardScheme);

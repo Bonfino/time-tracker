@@ -2,16 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useTimer } from "./hooks/useTimer.js";
 
 export default function Card({
-  id,
-  description,
-  created,
-  isRunning,
-  time,
-  stopped,
-  urgency,
   deleteCard,
   getTime,
+  card,
+  activeCardId,
+  setActiveCardId,
 }) {
+  const { id, description, created, isRunning, time, stopped, urgency } = card;
+
   const [isTimerRunning, setIsTimerRunning] = useState(isRunning);
   const elapsedTime = useTimer(isTimerRunning, time);
   const [stop, setStop] = useState(stopped);
@@ -27,8 +25,16 @@ export default function Card({
   const formatTime = (time) => (time < 10 ? `0${time}` : time);
 
   const handleRunning = () => {
+    if (!isTimerRunning) {
+      if (activeCardId && activeCardId !== id) {
+        return;
+      }
+      setActiveCardId(id);
+    } else {
+      handleTime();
+      setActiveCardId(null);
+    }
     setIsTimerRunning(!isTimerRunning);
-    if (isTimerRunning) handleTime();
   };
 
   const updateStoppedStatus = async (stopped) => {
@@ -86,7 +92,7 @@ export default function Card({
   };
 
   function handleTime() {
-    getTime(id, elapsedTime);
+    getTime(id, elapsedTime, false);
   }
 
   useEffect(() => {
@@ -119,14 +125,17 @@ export default function Card({
     };
   }, [isDropdownOpen]);
 
-  const buttonClass = isTimerRunning
-    ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
-    : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
+  const buttonClass =
+    activeCardId && activeCardId !== id
+      ? "w-20 bg-gray-300 text-white px-2 py-1.5 shadow-md rounded cursor-not-allowed"
+      : isTimerRunning
+      ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
+      : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
 
   const urgencyClass =
     selectedUrgency === "Low"
       ? "bg-green-300 text-green-800"
-      : selectedUrgency === "Medium"
+      : selectedUrgency === "Normal"
       ? "bg-yellow-300 text-yellow-800"
       : "bg-red-300 text-red-800";
 
@@ -154,10 +163,10 @@ export default function Card({
                     Low
                   </button>
                   <button
-                    onClick={() => handleUrgencyChange("Medium")}
+                    onClick={() => handleUrgencyChange("Normal")}
                     className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Medium
+                    Normal
                   </button>
                   <button
                     onClick={() => handleUrgencyChange("High")}
@@ -181,7 +190,7 @@ export default function Card({
         </td>
         <td className="border border-gray-300 p-3 font-semibold">{created}</td>
         <td className="border border-gray-300 p-3 w-[200px]">
-          <div className="w-full flex justify-start">
+          <div className="w-full flex justify-center">
             {stop ? (
               <button
                 onClick={handleDelete}
@@ -201,7 +210,7 @@ export default function Card({
                   className="font-semibold bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600 min-w-[80px] w-full"
                   onClick={handleStop}
                 >
-                  Stop
+                  Finish
                 </button>
               </div>
             )}
