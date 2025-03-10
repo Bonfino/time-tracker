@@ -116,6 +116,13 @@ export default function Home() {
     fetchCards();
   }, []);
 
+  const sortedCards = [...cards].sort((a, b) => {
+    if (a.id === activeCardId) return -1;
+    if (b.id === activeCardId) return 1;
+
+    return new Date(b.created) - new Date(a.created);
+  });
+
   return (
     <>
       <div className="flex justify-center mt-5">
@@ -155,7 +162,7 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {cards.map((card) => (
+            {sortedCards.map((card) => (
               <Card
                 key={card.id}
                 card={card}

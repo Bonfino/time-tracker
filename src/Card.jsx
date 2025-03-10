@@ -55,6 +55,9 @@ export default function Card({
   };
 
   const handleStop = () => {
+    if (activeCardId && activeCardId !== id) {
+      return;
+    }
     setIsTimerRunning(false);
     setStop(true);
     handleTime();
@@ -125,12 +128,17 @@ export default function Card({
     };
   }, [isDropdownOpen]);
 
-  const buttonClass =
+  const buttonStartClass =
     activeCardId && activeCardId !== id
       ? "w-20 bg-gray-300 text-white px-2 py-1.5 shadow-md rounded cursor-not-allowed"
       : isTimerRunning
       ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
       : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
+
+  const buttonStopClass =
+    activeCardId && activeCardId !== id
+      ? "w-20 bg-gray-300 text-white px-2 py-1.5 shadow-md rounded cursor-not-allowed"
+      : "w-20 bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600";
 
   const urgencyClass =
     selectedUrgency === "Low"
@@ -139,9 +147,12 @@ export default function Card({
       ? "bg-yellow-300 text-yellow-800"
       : "bg-red-300 text-red-800";
 
+  const activeClass =
+    activeCardId && activeCardId === id ? "border-2 border-blue-500" : "";
+
   return (
     <>
-      <tr className="hover:bg-gray-50">
+      <tr className={`hover:bg-gray-50 ${activeClass}`}>
         <td className="border border-gray-300 p-3">
           <p className="font-bold text-xl break-all">{description}</p>
         </td>
@@ -201,13 +212,13 @@ export default function Card({
             ) : (
               <div className="flex flex-col sm:flex-row gap-2 max-w-[250px]">
                 <button
-                  className={`font-semibold ${buttonClass} min-w-[80px] w-full`}
+                  className={`font-semibold ${buttonStartClass} min-w-[80px] w-full`}
                   onClick={handleRunning}
                 >
                   {isTimerRunning ? "Pause" : "Start"}
                 </button>
                 <button
-                  className="font-semibold bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600 min-w-[80px] w-full"
+                  className={`font-semibold ${buttonStopClass} min-w-[80px] w-full`}
                   onClick={handleStop}
                 >
                   Finish
