@@ -124,57 +124,70 @@ export default function Home() {
   });
 
   return (
-    <>
-      <div className="flex justify-center mt-5">
-        <form
-          className="border border-black p-5 rounded shadow-md w-1/2 flex justify-between align-center relative"
-          onSubmit={handleSubmitted}
-        >
-          <input
-            type="text"
-            onChange={(e) => setInputDesc(e.target.value)}
-            className="pl-2 w-4/5 focus:outline-none"
-            placeholder="What are you working on?"
-            value={inputDesc}
-          />
-          <div>
-            <button
-              type="submit"
-              className="w-24 bg-green-500 text-white p-2 shadow-md rounded hover:bg-green-600"
-            >
-              Create
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="flex justify-center mt-5">
-        <table className="w-4/5 border-collapse border border-gray-300 rounded shadow-md">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border border-gray-300 p-3 text-left">Task</th>
-              <th className="border border-gray-300 p-3 text-left">Urgency</th>
-              <th className="border border-gray-300 p-3 text-left">
-                Time spent
-              </th>
-              <th className="border border-gray-300 p-3 text-left">Date</th>
-              <th className="border border-gray-300 p-3 text-left">Manage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedCards.map((card) => (
-              <Card
-                key={card.id}
-                card={card}
-                deleteCard={deleteCard}
-                getTime={getTime}
-                activeCardId={activeCardId}
-                setActiveCardId={setActiveCardId}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="mb-12">
+          <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
+            Task Timer
+          </h1>
+          <form
+            className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg"
+            onSubmit={handleSubmitted}
+          >
+            <div className="flex gap-4">
+              <input
+                type="text"
+                onChange={(e) => setInputDesc(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="What are you working on?"
+                value={inputDesc}
               />
-            ))}
-          </tbody>
-        </table>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-200"
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Task
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Urgency
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Time spent
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Manage
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {sortedCards.map((card) => (
+                <Card
+                  key={card.id}
+                  card={card}
+                  deleteCard={deleteCard}
+                  getTime={getTime}
+                  activeCardId={activeCardId}
+                  setActiveCardId={setActiveCardId}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

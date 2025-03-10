@@ -1,14 +1,22 @@
 import "./Navbar.css";
 
 export default function Navbar() {
-  let date = new Date();
 
   return (
-    <header className="p-6 bg-[#1b263b] relative bg-gradient-to-r from-[#1D2D44] to-[#0D1321]">
-      <ul className="list-none flex flex-row justify-between">
-        <li className="item-list font-semibold text-xl">Trackify</li>
-        <li className="item-list">{date.toLocaleDateString()}</li>
-      </ul>
+    <header className="navbar">
+      <div className="item-list">
+        <a href="#" className="nav-brand">
+          <img src=".\src\assets\hourglass.png" alt="Logo" /> Trackify
+        </a>
+        <nav className="nav-menu">
+          <a href="#" className="nav-link">
+            Home
+          </a>
+          <a href="#" className="nav-link">
+            About
+          </a>
+        </nav>
+      </div>
     </header>
   );
 }

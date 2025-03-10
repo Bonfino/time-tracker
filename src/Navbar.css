@@ -1,5 +1,52 @@
+.navbar {
+  background: linear-gradient(to right, #1d2d44, #3b82f6);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: all 0.3s ease-in-out;
+}
+
 .item-list {
-  color: white;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-link {
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.nav-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-brand img {
+  width: 40px;
+  height: 40px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 1.5rem;
   align-items: center;
 }

@@ -128,18 +128,6 @@ export default function Card({
     };
   }, [isDropdownOpen]);
 
-  const buttonStartClass =
-    activeCardId && activeCardId !== id
-      ? "w-20 bg-gray-300 text-white px-2 py-1.5 shadow-md rounded cursor-not-allowed"
-      : isTimerRunning
-      ? "w-20 bg-gray-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-gray-600"
-      : "w-20 bg-blue-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-blue-600";
-
-  const buttonStopClass =
-    activeCardId && activeCardId !== id
-      ? "w-20 bg-gray-300 text-white px-2 py-1.5 shadow-md rounded cursor-not-allowed"
-      : "w-20 bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600";
-
   const urgencyClass =
     selectedUrgency === "Low"
       ? "bg-green-300 text-green-800"
@@ -151,83 +139,101 @@ export default function Card({
     activeCardId && activeCardId === id ? "border-2 border-blue-500" : "";
 
   return (
-    <>
-      <tr className={`hover:bg-gray-50 ${activeClass}`}>
-        <td className="border border-gray-300 p-3">
-          <p className="font-bold text-xl break-all">{description}</p>
-        </td>
-        <td className="border border-gray-300 font-semibold p-3">
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`text-md ${urgencyClass} rounded-xl py-0.5 px-1.5`}
+    <tr
+      className={`hover:bg-gray-50 transition-colors duration-150 ${activeClass}`}
+    >
+      <td className="px-6 py-4">
+        <p className="font-medium text-gray-900 break-all">{description}</p>
+      </td>
+      <td className="px-6 py-4">
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className={`text-sm font-medium ${urgencyClass} rounded-full py-1 px-3 transition-colors duration-200`}
+          >
+            {selectedUrgency}
+          </button>
+          {isDropdownOpen && !stop && (
+            <div
+              className="fixed transform -translate-x-1/2 mt-2 w-32 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]"
+              style={{
+                top: dropdownRef.current?.getBoundingClientRect().bottom + 5,
+                left:
+                  dropdownRef.current?.getBoundingClientRect().left +
+                  dropdownRef.current?.offsetWidth / 2,
+              }}
             >
-              {selectedUrgency}
+              <div className="py-1">
+                <button
+                  onClick={() => handleUrgencyChange("Low")}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150 text-left first:rounded-t-lg"
+                >
+                  Low
+                </button>
+                <button
+                  onClick={() => handleUrgencyChange("Normal")}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150 text-left"
+                >
+                  Normal
+                </button>
+                <button
+                  onClick={() => handleUrgencyChange("High")}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150 text-left last:rounded-b-lg"
+                >
+                  High
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </td>
+      <td className="px-6 py-4">
+        <span className="text-lg font-mono font-medium text-gray-900">
+          {hours > 0
+            ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(
+                seconds
+              )}`
+            : `${formatTime(minutes)}:${formatTime(seconds)}`}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-500">{created}</td>
+      <td className="px-6 py-4">
+        <div className="flex justify-start gap-2">
+          {stop ? (
+            <button
+              onClick={handleDelete}
+              className="px-4 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition-colors duration-200"
+            >
+              Delete
             </button>
-            {isDropdownOpen && !stop && (
-              <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                <div className="py-1">
-                  <button
-                    onClick={() => handleUrgencyChange("Low")}
-                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Low
-                  </button>
-                  <button
-                    onClick={() => handleUrgencyChange("Normal")}
-                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Normal
-                  </button>
-                  <button
-                    onClick={() => handleUrgencyChange("High")}
-                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    High
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </td>
-        <td className="border border-gray-300 p-3">
-          <span className="flex-grow text-center text-md sm:text-xl md:text-2xl lg:text-3xl">
-            {hours > 0
-              ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(
-                  seconds
-                )}`
-              : `${formatTime(minutes)}:${formatTime(seconds)}`}
-          </span>
-        </td>
-        <td className="border border-gray-300 p-3 font-semibold">{created}</td>
-        <td className="border border-gray-300 p-3 w-[200px]">
-          <div className="w-full flex justify-center">
-            {stop ? (
+          ) : (
+            <>
               <button
-                onClick={handleDelete}
-                className="font-semibold bg-red-500 text-white px-2 py-1.5 shadow-md rounded hover:bg-red-600 min-w-[80px] max-w-[120px]"
+                className={`px-4 py-1.5 rounded-md shadow-sm transition-colors duration-200 ${
+                  activeCardId && activeCardId !== id
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : isTimerRunning
+                    ? "bg-gray-500 hover:bg-gray-600"
+                    : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
+                onClick={handleRunning}
               >
-                Delete
+                {isTimerRunning ? "Pause" : "Start"}
               </button>
-            ) : (
-              <div className="flex flex-col sm:flex-row gap-2 max-w-[250px]">
-                <button
-                  className={`font-semibold ${buttonStartClass} min-w-[80px] w-full`}
-                  onClick={handleRunning}
-                >
-                  {isTimerRunning ? "Pause" : "Start"}
-                </button>
-                <button
-                  className={`font-semibold ${buttonStopClass} min-w-[80px] w-full`}
-                  onClick={handleStop}
-                >
-                  Finish
-                </button>
-              </div>
-            )}
-          </div>
-        </td>
-      </tr>
-    </>
+              <button
+                className={`px-4 py-1.5 rounded-md shadow-sm transition-colors duration-200 ${
+                  activeCardId && activeCardId !== id
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-red-500 hover:bg-red-600"
+                } text-white`}
+                onClick={handleStop}
+              >
+                Finish
+              </button>
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
   );
 }
